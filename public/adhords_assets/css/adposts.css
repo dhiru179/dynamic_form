@@ -1,0 +1,80 @@
+
+@media (min-width: 361px) {
+    .tab-height-postingad {
+        min-height: 700px;
+    }
+}
+
+.cat_select {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.custom_cat_select {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.custom_par_cat {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.custom_sub_select {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.custom_child_select {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.active_class {
+    background-color: #3A5759;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.button_child_cat {
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 6px 48px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.button_sub_cat {
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 6px 98px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin-left: 250px;
+    margin-top: 30px;
+}
+#menu {
+    width: 100%;
+    height: 100%;
+}
+
+.blur {
+    background: url("//static.adhoards.com/assets/images/no_ad.png") no-repeat scroll 0 0 / 100% 100% transparent;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+}
