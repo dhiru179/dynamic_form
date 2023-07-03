@@ -11,9 +11,15 @@ class AdhordsController extends Controller
 
     public function adhoards()
     {
-        $sub_category = DB::table('sub_category')->orderBy('category_id', 'ASC')->get();
+        
         $categories = DB::table('category')->get();
-        return view('adhoards.home', compact(['categories', 'sub_category']));
+        
+     
+        // echo "<pre>";
+        // // print_r($arr);
+        // echo "</pre>";
+        // return;
+        return view('adhoards.home', compact(['categories']));
     }
 
     public function showAdpost(Request $request, $cat_slug, $sub_cat_slug)

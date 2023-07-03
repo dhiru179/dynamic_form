@@ -115,7 +115,11 @@
                             if (response.slug == 'getSubCategory') {
                                 objForm.getSubCategory(response.data, data.level);
                             }
-                            // window.location.reload();
+                            else if(response.slug=="category")
+                            {
+                                alert(response.msg);
+                                window.location.reload();
+                            }
                         }
 
                     },

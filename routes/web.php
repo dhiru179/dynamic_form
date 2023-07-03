@@ -1,10 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\adhoards\AddPostController;
-use App\Http\Controllers\adhoards\AdhordsController;
-use App\Http\Controllers\adhoards\Auth;
-use App\Http\Controllers\universal\formController;
+use App\Http\Controllers\jobPortal\admin\{
+    FormController,
+    AdminDashboard,
+    JobController
+};
+use App\Http\Controllers\jobPortal\front\{
+    LandingPage,
+};
+use App\Http\Controllers\jobPortal\auth\{
+    AdminAuth,
+    EmployerAuth,
+    UsersAuth
+};
+use App\Http\Controllers\jobPortal\front\user\{
+    User,
+};
+use App\Http\Controllers\jobPortal\front\employer\{
+    Employer,
+};
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,38 +33,48 @@ use App\Http\Controllers\universal\formController;
 |
 */
 
-Route::get('/login', [Auth::class, 'login']);
-Route::get('/register', [Auth::class, 'register']);
-Route::post('/user_status',[Auth::class,'checkUserStatus']);
+Route::get('/', [LandingPage::class, 'landingPage'])->name('landing_page');
+Route::name('admin.')->prefix('admin')->group(function () {
+    Route::get('/', [AdminDashboard::class, 'index']);
+
+    Route::get('/create-form', [FormController::class, 'createForm'])->name('create-form');
+    Route::post('/custom_form', [FormController::class, 'storeFormField'])->name('store-field-info');
+    Route::get('/modify-form', [FormController::class, 'modifyForm'])->name('modify-form');
+    Route::post('/modify_custom_form', [FormController::class, 'modifyFormData']);
+    Route::post('/delete_custom_form', [FormController::class, 'deleteField']);
+    Route::post('/delete_option', [FormController::class, 'deleteOption']);
+
+    Route::post('/show_form', [FormController::class, 'showFormDetails']);
+    Route::get('/category', [FormController::class, 'showCategory']);
+    Route::post('/store_category', [FormController::class, 'storeCategory']);
 
 
+    Route::post('/get_form', [FormController::class, 'getForm']);
 
-Route::get('/custom_form',[formController::class,'customForm']);
-Route::post('/custom_form',[formController::class,'storeCustomForm']);
-Route::get('/modify_custom_form',[formController::class,'modifyForm']);
-Route::post('/modify_custom_form',[formController::class,'modifyFormData']);
-Route::post('/delete_custom_form',[formController::class,'deleteField']);
-Route::post('/delete_option',[formController::class,'deleteOption']);
+    #json ways
+    Route::get('/form', [jsonFormController::class, 'dynamicForm']);
+    Route::post('/store_form_data', [jsonFormController::class, 'storeFormData']);
+    Route::get('/list_form_data', [jsonFormController::class, 'showFormData']);
+    Route::get('/list_form_data/{id}', [jsonFormController::class, 'showFormData']);
+    #end
 
-Route::post('/show_form',[formController::class,'showFormDetails']);
-Route::get('/category',[formController::class,'showCategory']);
-Route::post('/store_category',[formController::class,'storeCategory']);
+    // Route::get('/signup', [AdminAuth::class, 'signUp'])->name('signup');
+    Route::get('/login', [AdminAuth::class, 'login'])->name('login');
+    Route::post('/login', [AdminAuth::class, 'login'])->name('login.post');
+    Route::post('/logout', [AdminAuth::class, 'signUp'])->name('logout');
+});
+Route::name('employer.')->prefix('employers')->group(function () {
+    Route::get('/signup', [EmployerAuth::class, 'signUp'])->name('signup');
+    Route::post('/signup', [EmployerAuth::class, 'signUp'])->name('signup.post');
+    Route::get('/login', [EmployerAuth::class, 'login'])->name('login');
+    Route::post('/login', [EmployerAuth::class, 'login'])->name('login.post');
+    Route::post('/logout', [EmployerAuth::class, 'signUp'])->name('logout');
+});
 
-Route::get('/form',[formController::class,'dynamicForm']);
-Route::post('/get_form',[formController::class,'getForm']);
-Route::post('/store_form_data',[formController::class,'storeFormData']);
-Route::get('/list_form_data',[formController::class,'showFormData']);
-Route::get('/list_form_data/{id}',[formController::class,'showFormData']);
-// Route::get('/show_form',[formController::class,'showForm']);
-// Route::post('/show_form',[formController::class,'getFormData']);
-// Route::post('/destroy_form',[formController::class,'destroyForm']);
-// Route::post('/assign_to',[formController::class,'assignTo']);
-Route::post('/get_sub_category',[formController::class,'getSubCategory']);
-
-Route::get('/', [AdhordsController::class, 'adhoards']);
-Route::get('/{cat_slug}/{sub_cat_slug}', [AdhordsController::class, 'showAdpost']);
-
-Route::get('/adposts', [AddPostController::class, 'adposts']);
-Route::post('/onclick_proceed',[AddPostController::class,'proceed']);
-Route::post('/adpost/adsubmit',[AddPostController::class,'adSubmit']);
-Route::get('/adposts/{cat}/{sub_cat}', [AddPostController::class, 'formGenerate']);
+Route::name('users.')->prefix('users')->group(function () {
+    Route::get('/signup', [UsersAuth::class, 'signUp'])->name('signup');
+    Route::post('/signup', [UsersAuth::class, 'signUp'])->name('signup.post');
+    Route::get('/login', [UsersAuth::class, 'login'])->name('login');
+    Route::post('/login', [UsersAuth::class, 'login'])->name('login.post');
+    Route::post('/logout', [UsersAuth::class, 'signUp'])->name('logout');
+});

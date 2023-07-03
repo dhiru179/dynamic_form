@@ -93,7 +93,7 @@
                 $('#' + id).next().remove();
 
                 if ($.trim(inputField.val()) == '') {
-                    validate.validate.required(id);
+                    validate.required(id);
 
                 } else {
                     if (!emailPattern.test(inputField.val())) {

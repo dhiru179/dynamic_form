@@ -16,42 +16,42 @@
                         </select>
                     </div>
                 </div>
-                <input type="submit" class="btn btn-sm btn-success" value="show list">
+                <input type="search" class="form-control w-50" name="search_keys" placeholder="search...">
             </div>
-            <div class="mb-3 d-flex">
-                @if (count($result) > 0)
-                    @foreach ($th as $item)
-                        @php
-                                $flag = false;
-                                $exp = explode(' ', $item->type);
-                                $tagName = $exp[0];
-                                $tagType = isset($exp[1])==true?$exp[1]:"";
-                                if($tagType == 'radio' || $tagType == 'checkbox')
-                                {
-                                    $flag = true;
-                                }
-                                if($tagName == 'dropdown'){
-                                    $flag=true;
-                                }
-                        @endphp
+            <div class="mb-3 d-flex row">
+                {{-- @if (count($result) > 0) --}}
 
-                        @if ($flag===true)
-                            <div class="col-xs-12 me-1 col-md-3">
-                                <select class="form-select" name="{{ $item->name }}[]" id="form_input{{ $item->id }}">
-                                    <option value="">{{ $item->label }}</option>
-                                    @foreach ($options as $option)
-                                        @if ($item->id === $option->tmp_tbl_form_field_id)
-                                            <option value="{{ $option->option }}">{{ $option->option }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
-                    @endforeach
-                    <div class="">
-                        {{-- <input type="button" class="btn btn-info" value="search"> --}}
-                    </div>
-                @endif
+                @foreach ($th as $item)
+                    @php
+                        $flag = false;
+                        $exp = explode(' ', $item->type);
+                        $tagName = $exp[0];
+                        $tagType = isset($exp[1]) == true ? $exp[1] : '';
+                        if ($tagType == 'radio' || $tagType == 'checkbox') {
+                            // $flag = true;
+                        }
+                        if ($tagName == 'dropdown') {
+                            $flag = true;
+                        }
+                    @endphp
+
+                    @if ($flag === true)
+                        <div class="col-xs-12 me-1 col-md-3 mb-3">
+                            <select class="form-select" name="{{ $item->name }}[]" id="form_input{{ $item->id }}">
+                                <option value="">{{ $item->label }}</option>
+                                @foreach ($options as $option)
+                                    @if ($item->id === $option->tmp_tbl_form_field_id)
+                                        <option value="{{ $option->option }}">{{ $option->option }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                @endforeach
+                {{-- @endif --}}
+                <div class="col-xs-12 me-1 col-md-3 mb-3">
+                    <input type="submit" class="btn btn-sm btn-success" value="show list">
+                </div>
             </div>
         </form>
         @if (count($result) > 0)
@@ -84,20 +84,37 @@
                             }
                         }
                     @endphp --}}
-                    @foreach ($result as $key => $item)
+                    {{-- @foreach ($result as $key => $input)
                         <tr>
                             <td>{{ $key + 1 }}</td>
-                            
-                            @php
-                                foreach ($th as $value) {
-                                    $name = $value->name;
-                                    $result = $item->$name;
-                                    echo "<td>$result</td>";
-                                }
-                            @endphp
-                                
-                           
+                            @foreach ($th as $item)
+                                @php
+                                    
+                                    $n = $item->name;
+                                @endphp
+                                <td>{{ $input->$n }}</td>
+                            @endforeach
+
                         </tr>
+                    @endforeach --}}
+                    @foreach ($result as $key => $input)
+                        @php
+                            $json = json_decode($input->json_data);
+                            echo '<tr>';
+                            echo "<td>".($key+1)."</td>";
+                            foreach ($th as $item) {
+                                $n = $item->name;
+                                $data = $json->$n;
+                                if (is_array($data)) {
+                                    $conct = implode(',', $data);
+                                    echo "<td>$conct</td>";
+                                } else {
+                                    echo "<td>$data</td>";
+                                }
+                            }
+                            
+                            echo '</tr>';
+                        @endphp
                     @endforeach
 
                 </tbody>

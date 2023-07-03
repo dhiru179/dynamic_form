@@ -124,8 +124,8 @@
             },
             getForm: (data, options) => {
                 let formHtml = "";
-                validate.star=[];
-                validate.type=[];
+                validate.star = [];
+                validate.type = [];
                 $('#formTable').html("");
                 if (data.length > 0) {
 
@@ -144,18 +144,37 @@
 
                             if (type == "radio" || type == "checkbox") {
                                 let option = "";
+                                let name = "";
+                                let a = 0;
+                                let singleCheck = {};
+                                console.log(options.length)
 
                                 options.forEach((e, i) => {
                                     if (elem.id === e.tmp_tbl_form_field_id) {
+                                        if (type == "checkbox") {
+                                            name = elem.name + `[${elem.id}][${e.id}][]`;
+                                        } else if (type == "radio") {
+                                            name = elem.name + `[${elem.id}]`;
+                                        }
+                                        singleCheck.check = e;
                                         option += `<div class="form-check form-check-inline">
                                             
-                                                    <input class="form-check-input" name="${elem.name+`[${elem.id}][]`}" type="${type}" id="inlineCheckbox${i}" value="${e.id}">
+                                                    <input class="form-check-input" name="${name}" type="${type}" id="inlineCheckbox${i}" value="${e.option.trim()}">
                                                     <label class="form-check-label" for="inlineCheckbox${i}">${e.option}</label>
                                               </div>`
-
+                                        a++;
                                     }
 
                                 })
+                                // console.log(singleCheck,a)
+                                if (type == "checkbox" && a < 2) {
+                                    // console.log(singleCheck)
+                                    option = `<div class="form-check form-check-inline">
+                                            
+                                            <input class="form-check-input singleCheckField" name="${elem.name + `[${elem.id}]`}" type="${type}"  id="inlineCheckbox${index}" value="${singleCheck.check.option}">
+                                            <label class="form-check-label" for="inlineCheckbox${index}">${singleCheck.check.option}</label>
+                                      </div>`
+                                }
 
                                 formHtml += `<div class="mb-3">
                                           <label for="" class="form-label mx-2">${elem.label+star}:</label>
@@ -174,14 +193,15 @@
 
                             options.forEach((e, i) => {
                                 if (elem.id === e.tmp_tbl_form_field_id) {
-                                    option += `<option value="${e.id}">${e.option}</option>`;
+                                    option +=
+                                        `<option value="${e.option.trim()}">${e.option}</option>`;
                                 }
                             })
 
                             formHtml += `<div class="mb-3">
                                
                                         <label for=""  class="form-label">${elem.label+star}</label>
-                                        <select  name="${elem.name+`[${elem.id}][]`}" id="${elem.name}" class="form-select">
+                                        <select  name="${elem.name+`[${elem.id}]`}" id="${elem.name}" class="form-select">
                                             ${option}
                                          </select>   
                                      </div>`;
@@ -219,11 +239,12 @@
 
 
         $('#save').click((e) => {
-           
+
             validate.is_validate = false; //set false default
 
             Object.entries(validate.star).forEach(([key, value]) => {
-                
+                // console.log(value,validate.is_validate);  
+                //check box and radio handle later
                 validate.required(value);
             });
             // Object.entries(validate.type).forEach(([key, value]) => {
@@ -232,15 +253,22 @@
             //         validate.email(value);
             //     }
             // });
-            
-            console.log("save btn ok",validate.is_validate);
-            
+
+
+            console.log(validate.is_validate);
             //  if validate condition not pass return true
 
             if (validate.is_validate === false) {
-                console.log("ok form");
                 const url = "{{ url('/store_form_data') }}";
                 let formData = $('#formTable').serializeArray();
+                $('.singleCheckField').each((i, elem) => {
+                    formData.push({
+                        name: $(elem).attr('name'),
+                        value: $(elem).is(':checked') === true ? $(elem).val() : false,
+                    })
+                    // $(elem).is(':checked');
+                    // console.log($(elem).is(':checked'),$(elem).attr('name'));
+                })
                 formData.push({
                     name: "slug",
                     value: "storeFormData"

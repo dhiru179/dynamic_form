@@ -1,0 +1,227 @@
+<?php
+
+namespace App\Http\Controllers\universal;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Psy\TabCompletion\Matcher\FunctionsMatcher;
+
+class formController extends Controller
+{
+
+    public function dynamicForm()
+    {
+        $label = DB::table('tbl_tag_label_name')->get();
+        $attrName = DB::table('tbl_tag_attr_name')->get();
+        $type = DB::table('tbl_form_tag_type')->get();
+        return view('universal.form', compact(['label', 'attrName', 'type']));
+    }
+
+    public function showForm()
+    {
+
+        // $result = DB::table('tbl_form_field')
+
+        //     ->join('tbl_form_tag_type', 'tbl_form_field.form_tag_type_id', '=', 'tbl_form_tag_type.id')
+        //     ->join('tbl_tag_label_name', 'tbl_form_field.tag_label_name_id', '=', 'tbl_tag_label_name.id')
+        //     ->join('tbl_tag_attr_name', 'tbl_form_field.tag_attr_name_id', '=', 'tbl_tag_attr_name.id')
+        //     ->select('tbl_form_field.id', 'tbl_form_tag_type.type', 'tbl_tag_attr_name.attr_name', 'tbl_tag_label_name.label_name')
+        //     ->get();
+        $category = DB::table('category')->get();
+        $result = DB::table('tmp_tbl_form_field')
+            ->join('tbl_form_tag_type', 'tmp_tbl_form_field.tag_type_id', '=', 'tbl_form_tag_type.id')
+            ->select('tmp_tbl_form_field.*', 'tbl_form_tag_type.type')
+            ->get();
+        // return $result;
+        return view('universal.show_form', compact(['result', 'category']));
+    }
+
+    public function getFormData(Request $request)
+    {
+
+        foreach ($request->post() as $key => $value) {
+
+            $data =  [
+                'tag_type_id' => $value['tag_type_id'],
+                'label' => $value['tag_label'],
+                'name' => $value['tag_name'],
+                'is_need' => $value['is_need'],
+                'option' => isset($value['option']) == 1 ? json_encode($value['option']) : json_encode([]),
+            ];
+            DB::table('tmp_tbl_form_field')->insert($data);
+        }
+
+        $data = [
+            "status" => true,
+            "data" => "",
+            'msg' => "form Updated",
+            'slug' => "",
+        ];
+        return $data;
+    }
+
+    function modifyForm(Request $request)
+    {
+
+        $option = $request->option;
+        $data =  [
+            // 'field_id' => $request->post('id'),
+            'label' => $request->post('label'),
+            'name' => $request->post('name'),
+            'is_need' => $request->post('is_need'),
+            'option' => isset($option) == 1 ? json_encode($option) : json_encode([]),
+        ];
+        DB::table('tmp_tbl_form_field')->where(['id' => $request->post('id')])->update($data);
+        $data = [
+            "status" => true,
+            "data" => "",
+            'msg' => "form Updated",
+            'slug' => "",
+        ];
+        return $data;
+    }
+    function destroyForm(Request $request)
+    {
+        DB::table('tmp_tbl_form_field')->where(['id' => $request->post('id')])->delete();
+        $data = [
+            "status" => true,
+            "data" => "",
+            'msg' => "form delete",
+            'slug' => "",
+        ];
+        return $data;
+    }
+    function assignTo(Request $request)
+    {
+        $cat_id = $request->category_id;
+        $sub_cat_id = $request->sub_cate_id;
+        foreach ($request->field_id as $key => $value) {
+            $data = [
+                'tbl_form_field_id' => (int)$value,
+                'cat_id' => $cat_id,
+                'sub_cat_id' => $sub_cat_id,
+            ];
+            DB::table('form_group')->insert($data);
+        }
+        $data = [
+            "status" => true,
+            "data" => "",
+            'msg' => "assign form success",
+            'slug' => $request->slug,
+        ];
+        return $data;
+    }
+
+    function getSubCategory(Request $request)
+    {
+        $result = DB::table('category')->where(['parent_id' => $request->category_id])->get();
+        $data = [
+            "status" => true,
+            "data" => $result,
+            'slug' => $request->slug,
+        ];
+        return $data;
+    }
+    function customForm()
+    {
+        $category = DB::table('category')->where(['parent_id' => null])->get();
+        $type = DB::table('tbl_form_tag_type')->get();
+        return view('universal.custom_form', compact(['category', 'type']));
+    }
+
+    function storeCustomForm(Request $request)
+    {
+        $formData = $request->formData;
+        $cat_id = $request->cat_id;
+        // return count($formData);
+        $curentTime = microtime(false);
+        $lastId = DB::table('tmp_tbl_form_field')->limit(1)->orderBy('id', 'DESC')->get()[0]->id;
+        foreach ($formData as $key => $value) {
+
+            $data[] =  [
+                'category_id' => $cat_id,
+                'tag_type_id' => $value['tag_id'],
+                'label' => $value['tag_label'],
+                'name' => $value['tag_name'],
+                'is_need' => $value['is_need'],
+                // 'option' => isset($value['options']) == 1 ? json_encode($value['options']) : json_encode([]),
+            ];
+
+            // $id = DB::table('tmp_tbl_form_field')->insertGetId($data);
+            if (!empty($value['options'])) {
+                $optionData[] = $value;
+                // foreach ($value['options'] as $key => $option) {
+                //     $optionData[] = $value
+
+                //     // DB::table('options')->insert(['tag_id' => $value['tag_id'], 'option' => $option, 'tmp_tbl_form_field_id' => $id]);
+                // }
+            }
+        }
+        // return $optionData;
+        DB::table('tmp_tbl_form_field')->insert($data);
+        $getInsertData = DB::table('tmp_tbl_form_field')->where('id', '>', $lastId)->get();
+        $newOpData = [];
+        foreach ($optionData as $key => $opData) {
+            foreach ($getInsertData as $key => $dbData) {
+                if (
+                    $opData['tag_id'] == $dbData->tag_type_id &&
+                    $opData['tag_label'] == $dbData->label &&
+                    $opData['tag_name'] == $dbData->name &&
+                    $opData['is_need'] == $dbData->is_need
+                ) {
+                    foreach ($opData['options'] as $key => $option) {
+                        $newOpData[] = [
+                            'tag_id' => $dbData->tag_type_id,
+                            'option' => $option,
+                            'tmp_tbl_form_field_id' => $dbData->id
+                        ];
+                    }
+                   
+                    break;
+                }
+            }
+        }
+        // return $newOpData;
+        DB::table('options')->insert($newOpData);
+        // insert $data then $optionsData
+        // return $data;
+        $data = [
+            "status" => true,
+            "data" => $request->formData,
+            "msg" => "success",
+            "slug" => $request->slug,
+        ];
+        return $data;
+        return $request->all();
+    }
+
+    function showCategory()
+    {
+        $category = DB::table('category')->where(['parent_id' => null])->get();
+        return view('universal.category', compact(['category']));
+    }
+
+    function storeCategory(Request $request)
+    {
+
+        $id = $request->parent_id;
+        $category = $request->category;
+        $slugs = $request->slugs;
+        for ($i = 0; $i < count($category); $i++) {
+            $result = [
+                'name' => $category[$i],
+                'slug' => $slugs[$i],
+                'parent_id' => $id,
+            ];
+            DB::table('category')->insert($result);
+        }
+
+        $data = [
+            "status" => true,
+            "data" => '',
+            'slug' => $request->slug,
+        ];
+        return $data;
+    }
+}
