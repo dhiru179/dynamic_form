@@ -40,6 +40,15 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'employer'=>[
+            'driver' => 'session',
+            'provider' => 'employers', 
+        ],
+        'admin'=>[
+            'driver' => 'session',
+            'provider' => 'admins', 
+        ],
+        
     ],
 
     /*
@@ -60,15 +69,23 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
-
         // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\User::class,
         // ],
+
+        'users' => [
+            'driver' => 'database',
+            'table' => 'users',
+        ],
+        'employers' => [
+            'driver' => 'database',
+            'table' => 'employers',
+        ],
+        'admins'=>[
+            'driver' => 'database',
+            'provider' => 'admins', 
+        ],
     ],
 
     /*
@@ -93,6 +110,13 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'employers' => [
+            'provider' => 'employers',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
     ],
 
     /*

@@ -11,11 +11,11 @@
         </div>
         <div class="d-flex">
             <div class="col-3">
-
+                filter
             </div>
             <div class="mb-3 col-6">
                 <div class="mb-3">
-                    @foreach ($result as $key=> $item)
+                    {{-- @foreach ($result as $key=> $item)
                     @php
                         $item = json_decode($item->json_data);
 
@@ -30,7 +30,7 @@
                             <a href="#" class="card-link">Another link</a>
                         </div>
                     </div>
-                    @endforeach
+                    @endforeach --}}
                   
                 </div>
                 <nav aria-label="Page navigation example">

@@ -11,7 +11,7 @@ class Employer extends Controller
 {
     public function dashboard()
     {
-        return view('job_portal.front.employer.dashboard');
+        return view('job_portal.front.employer.emp_dashboard');
     }
     public function adPost()
     {

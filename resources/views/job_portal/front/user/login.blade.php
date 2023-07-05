@@ -4,7 +4,8 @@
 @section('layout')
 
     <div class="container col-4 offset-4">
-        <form class="row mt-5" id="form">
+        <form class="row mt-5" action="{{route('users.login.post')}}" method="POST" id="form">
+            @csrf
             <h3 class="text-center">User Login</h3>
             @foreach ($result as $item)
                 @php
@@ -54,7 +55,7 @@
                 @endif
             @endforeach
             <div class="mb-3">
-                <input type="button" class="btn btn-success" value="sign up">
+                <input type="submit" class="btn btn-success" value="login">
             </div>
         </form>
     </div>

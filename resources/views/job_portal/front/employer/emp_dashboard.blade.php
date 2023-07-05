@@ -1,9 +1,8 @@
 @extends('job_portal.front.layout.layout_emp')
-@section('title', 'employer')
+@section('title', 'login')
 {{-- @section('dash', 'active') --}}
 @section('layout')
 
-<div class="container">
-    <h5>Employer</h5>
-</div>
+<h5>Welcome Employer Dashboard</h5>
+
 @endsection

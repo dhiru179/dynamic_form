@@ -11,7 +11,7 @@ class User extends Controller
 {
     public function index()
     {
-        return view('job_portal.front.user.dashboard');
+        return view('job_portal.front.user.index');
     }
   
 }

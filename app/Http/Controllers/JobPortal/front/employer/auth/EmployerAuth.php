@@ -31,6 +31,7 @@ class EmployerAuth extends Controller
     }
     public function login()
     {
+       
         $result = DB::table('form_field')
         ->join('input_type','form_field.input_type_id','=','input_type.id')
         ->select('form_field.*','input_type.type')
@@ -39,13 +40,27 @@ class EmployerAuth extends Controller
         
     }
     
+    public function loginPost(Request $request)
+    {
+        $credentials = [
+            'emp_id' => $request->user_id,
+            'password' => $request->password,
+        ];
+        
+        if (Auth::guard('employer')->attempt($credentials)) {
+          
+            return redirect()->route('employer.dashboard');
+        }
+        return "employer";
+    }
+
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
+        Auth::guard('employer')->logout();
 
         $request->session()->invalidate();
 
-        $request->session()->regenerateToken();
+        // $request->session()->regenerateToken();
 
         return redirect('/');
     }

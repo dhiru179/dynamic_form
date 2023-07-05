@@ -28,9 +28,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
+                    @auth('web')
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{{ route('users.index') }}">Home</a>
+                        </li>
+                    @endauth
                     <li class="nav-item">
                         <a class="nav-link" href="#">Link</a>
                     </li>
@@ -51,23 +53,34 @@
                     <li class="nav-item">
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li>
-                    <li class="dropdown nav-item">
-                        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            sign
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('users.login') }}">User Login</a></li>
-                            <li><a class="dropdown-item" href="{{ route('users.signup') }}">User signUp</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{{ route('employer.login') }}">Employer Login</a></li>
-                            <li><a class="dropdown-item" href="{{ route('employer.signup') }}">Employer signUp</a></li>
-                        </ul>
-                    </li>
+                    @guest
+                        <li class="dropdown nav-item">
+                            <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                sign
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ route('users.login') }}">User Login</a></li>
+                                <li><a class="dropdown-item" href="{{ route('users.signup') }}">User signUp</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{{ route('employer.login') }}">Employer Login</a></li>
+                                <li><a class="dropdown-item" href="{{ route('employer.signup') }}">Employer signUp</a></li>
+                            </ul>
+                        </li>
+                    @endguest
                 </ul>
-
+                @auth
+                 <div class="d-flex">
+                   
+                    <form class="d-flex" action="{{route('users.logout')}}" method="POST">
+                        @csrf
+                        <input type="text" class="form-control me-3 w-50" value="{{auth()->user()->user_id}}" disabled>
+                        <input type="submit" class="btn btn-dark" value="logout">
+                    </form>
+                 </div>
+                @endauth
 
 
             </div>

@@ -1,11 +1,12 @@
 @extends('job_portal.front.layout.layout')
-@section('title', 'employer login')
+@section('title', 'login')
 {{-- @section('dash', 'active') --}}
 @section('layout')
 
     <div class="container col-4 offset-4">
-        <form class="row mt-5" id="form">
-            <h3 class="text-center">Employer login</h3>
+        <form class="row mt-5" action="{{route('employer.login.post')}}" method="POST" id="form">
+            @csrf
+            <h3 class="text-center">Employer Login</h3>
             @foreach ($result as $item)
                 @php
                     
@@ -54,7 +55,7 @@
                 @endif
             @endforeach
             <div class="mb-3">
-                <input type="button" class="btn btn-success" value="sign up">
+                <input type="submit" class="btn btn-success" value="login">
             </div>
         </form>
     </div>

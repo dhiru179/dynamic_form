@@ -9,11 +9,7 @@ use App\Http\Controllers\jobPortal\admin\{
 use App\Http\Controllers\jobPortal\front\{
     LandingPage,
 };
-use App\Http\Controllers\jobPortal\auth\{
-    AdminAuth,
-    EmployerAuth,
-    UsersAuth
-};
+
 use App\Http\Controllers\jobPortal\front\user\{
     User,
 };
@@ -34,6 +30,9 @@ use App\Http\Controllers\jobPortal\front\employer\{
 */
 
 Route::get('/', [LandingPage::class, 'landingPage'])->name('landing_page');
+
+require_once(__DIR__ . '/auth.php');
+
 Route::name('admin.')->prefix('admin')->group(function () {
     Route::get('/', [AdminDashboard::class, 'index']);
 
@@ -58,23 +57,14 @@ Route::name('admin.')->prefix('admin')->group(function () {
     Route::get('/list_form_data/{id}', [jsonFormController::class, 'showFormData']);
     #end
 
-    // Route::get('/signup', [AdminAuth::class, 'signUp'])->name('signup');
-    Route::get('/login', [AdminAuth::class, 'login'])->name('login');
-    Route::post('/login', [AdminAuth::class, 'login'])->name('login.post');
-    Route::post('/logout', [AdminAuth::class, 'signUp'])->name('logout');
 });
-Route::name('employer.')->prefix('employers')->group(function () {
-    Route::get('/signup', [EmployerAuth::class, 'signUp'])->name('signup');
-    Route::post('/signup', [EmployerAuth::class, 'signUp'])->name('signup.post');
-    Route::get('/login', [EmployerAuth::class, 'login'])->name('login');
-    Route::post('/login', [EmployerAuth::class, 'login'])->name('login.post');
-    Route::post('/logout', [EmployerAuth::class, 'signUp'])->name('logout');
+Route::middleware(['auth:employer'])->name('employer.')->prefix('employers')->group(function () {
+    Route::get('/dashboard', [Employer::class, 'dashboard'])->name('dashboard');
+
 });
 
-Route::name('users.')->prefix('users')->group(function () {
-    Route::get('/signup', [UsersAuth::class, 'signUp'])->name('signup');
-    Route::post('/signup', [UsersAuth::class, 'signUp'])->name('signup.post');
-    Route::get('/login', [UsersAuth::class, 'login'])->name('login');
-    Route::post('/login', [UsersAuth::class, 'login'])->name('login.post');
-    Route::post('/logout', [UsersAuth::class, 'signUp'])->name('logout');
+Route::middleware(['auth'])->name('users.')->prefix('users')->group(function () {
+
+    Route::get('/index', [User::class, 'index'])->name('index');
+
 });
